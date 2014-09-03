@@ -1,10 +1,30 @@
+;;;;; MMBE.ahk
+;Functions to work with the MMBE transaction
+
+;Include basic SAP functions
 #Include inc/Base.ahk
 
-;;; SCREEN TITLE ;;;
-SCR_MMBE_Main  := "Bestandsübersicht: Buchungskreis/Werk/Lager/Charge"
-SCR_MMBE_Basic := "Bestandsübersicht: Grundliste"
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; CONFIGURATION ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Screen Title
+;Default title are in German. Change this values if you are using SAP in another
+;language
 
-GetStock(Article, Plant, StorageLoc)
+SCR_MMBE_Main  := "Bestandsübersicht: Buchungskreis/Werk/Lager/Charge" ;Main
+SCR_MMBE_Basic := "Bestandsübersicht: Grundliste"                      ;Basic data
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; FUNCTIONS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; SAP_MMBE_GetStock()
+;Return a variable with the stock of the specified material
+;Article = Material number
+;Plant = Plant code
+;StorageLoc = Storage Location
+;
+;NOTE: This function will check if the StorageLoc provided correspond to what 
+;SAP shows.
+;WARNING: If there is an error while selecting the article, this function will
+;not throw an exception. Instead return a stock of zero.
+SAP_MMBE_GetStock(Article, Plant, StorageLoc)
 {
 	global SCR_MMBE_Main, HTK_NEXTFIELD, HTK_EXECUTE, SCR_MMBE_Basic
 	
