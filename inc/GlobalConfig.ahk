@@ -6,7 +6,7 @@
 ;NOTE: You definetely should edit the STATUS BAR coordinates and if you are 
 ;using SAP in any language other than German, you should edit the SCREEN TITLE
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; STATUS BAR ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; STATUS BAR ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Coordinates
 ;Please refer to the documentation to understand how to set these coordinates
 CRD_StatusBar_X = 906
@@ -18,7 +18,7 @@ CLR_StatusBar_Error   = 0xFF0000  ;Red
 CLR_StatusBar_Warning = 0         ;Yellow
 CLR_StatusBar_Ok      = 0x4AA518  ;Green
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; SCREEN TITLE ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; SCREEN TITLE ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Default title are in German. Change this values if you are using SAP in another
 ;language
 
@@ -26,7 +26,7 @@ SCR_Main    := "SAP Easy Access"  ;Main screen
 SCR_ERROR   := "Fehler"           ;Error screen
 SCR_WARNING := "Warnung"          ;Warning screen
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; SHORTCUTS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; SHORTCUTS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;Default shortcuts of SAP. Change it if you are using custom shortcuts
 
 HTK_ENTER          = {Enter}
