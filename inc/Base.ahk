@@ -180,16 +180,28 @@ SAP_StatusBarMessage()
 	}
 	else if (Color = CLR_StatusBar_Error)
 	{
-		throw Exception("Error", -1)
+		Error := "Red"
 	}
 	else if (Color = CLR_StatusBar_Ok)
 	{
-		throw Exception("Ok", -1)
+		Error := "Green"
 	}
 	else
 	{
-		throw Exception("Unrecognized color: " Color, -1)
+		Error := "Unrecognized color: " Color
 	}
+	
+	;Wait until status bar is clear
+	Loop
+	{
+		try
+		{
+			SAP_StatusBarMessage()
+			break
+		}
+	}
+	
+	throw Exception(%Error%, -1)
 }
 
 ;; SAP_ClearSelectedField()
