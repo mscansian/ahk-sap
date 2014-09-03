@@ -1,31 +1,19 @@
-;;;;;;;;;;;;;;;; SAP AUTOMATION LIB ;;;;;;;;;;;;;;;;;;;
+;;;;; Base.ahk
+;This file contains all basic functions to access the SAP GUI.You should include
+;it whenever you are writing a new script.
+;
+;NOTE: All transaction-specific files (eg. MMBE.ahk) already include this file
 
-;;; HOTKEYS DEFINITION ;;;
-HTK_ENTER          = {Enter}
-HTK_EXECUTE        = {F8}
-HTK_BACK           = {F3}
-HTK_END            = +{F3}
-HTK_CANCEL         = {F12}
-HTK_SELECT         = {F9}
-HTK_NEWTRANSACTION = ^{NumpadDiv}
-HTK_NEXTFIELD      = {Tab}
-HTK_PREVFIELD      = +{Tab}
+;Include all the global configurations of SAP
+;If this is your first time using this lib, REMEMBER TO EDIT GlobalConfig.ahk TO
+;SUIT YOUR NEEDS
+#Include inc/GlobalConfig.ahk
 
-;;; SCREEN TITLE ;;;
-SCR_Main := "SAP Easy Access -"
-SCR_ERROR := "Fehler -"
-SCR_WARNING := "Warnung "
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; SAP FUNCTIONS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;The functions below are used to access some basic functionalities of SAP GUI
 
-;;; SCREEN COORDS ;;;
-CRD_StatusBar_X = 906
-CRD_StatusBar_Y = 971
-
-;;; SCREEN COLOR ;;;
-CLR_StatusBar_Normal  = 0xE7E7EF ;Gray
-CLR_StatusBar_Error   = 0xFF0000 ;Red
-CLR_StatusBar_Warning = 0        ;Yellow
-CLR_StatusBar_Ok      = 0x4AA518 ;Green
-
+;; SAP_ReturnToMainScreen()
+;Cancel all transactions and return to SAP main screen
 SAP_ReturnToMainScreen()
 {
 	global HTK_BACK, SCR_Main
@@ -44,6 +32,11 @@ SAP_ReturnToMainScreen()
 	}
 }
 
+;; SAP_OpenTransaction()
+;Returns to main screen and then start the specified transaction
+;TransactionName = Name of the transaction (eg. MM03)
+;WindowTitle = Window title of the transaction (if empty, the function will not
+;check for a matching window title
 SAP_OpenTransaction(TransactionName, WindowTitle:="")
 {
 	global HTK_NEWTRANSACTION, HTK_ENTER, SCR_Main
@@ -74,6 +67,14 @@ SAP_OpenTransaction(TransactionName, WindowTitle:="")
 	}
 }
 
+;; SAP_WaitForWindow()
+;Wait until the specified window is open
+;WindowTitle = Title of the window to wait
+;IgnoreWarning = If true, this function will just ignore any warning and 
+;proceed. If false, it will throw an exception when a warning occours
+;Timeout = Timeout in milliseconds. When timeout is reached, the function will
+;throw an exception. A value of zero means no timeout.
+;NOTE: If an SAP error is found, this function will throw an exception.
 SAP_WaitForWindow(WindowTitle, IgnoreWarning:= false, Timeout:=0)
 {
 	global SCR_ERROR, SCR_WARNING, HTK_ENTER
@@ -110,6 +111,13 @@ SAP_WaitForWindow(WindowTitle, IgnoreWarning:= false, Timeout:=0)
 	}
 }
 
+;; SAP_SelectionSelect()
+;Select an option from the Options Selection screen.
+;OptionNumber = Number of the option to be selected (starts on zero)
+;OptionName = Name of the option to be select. If provided, this function will
+;check if OptionNumber corresponds to OptionName. If not it will search for the
+;correct OptionNumber. If OptionName is blank, this function will select 
+;OptionNumber without any name verification.
 SAP_SelectionSelect(OptionNumber, OptionName:="")
 {
 	global HTK_SELECT, HTK_ENTER
@@ -155,6 +163,12 @@ SAP_SelectionSelect(OptionNumber, OptionName:="")
 	Send %HTK_ENTER%
 }
 
+;; SAP_StatusBarMessage()
+;Check for error/warning messages in the status bar
+;This function will throw an exception everytime an error or warning if found in
+;the status bar.
+;For this function to work, the variables CRD_StatusBar_X and CRD_StatusBar_Y 
+;must be correctly set in inc/GlobalConfig.ahk
 SAP_StatusBarMessage()
 {
 	global CRD_StatusBar_X, CRD_StatusBar_Y, CLR_StatusBar_Normal, CLR_StatusBar_Error, CLR_StatusBar_Ok
@@ -178,18 +192,29 @@ SAP_StatusBarMessage()
 	}
 }
 
-;;;;; LOW LEVEL FUNCTIONS ;;;;;;;;
-
+;; SAP_ClearSelectedField()
+;Delete all text of the current selected field
 SAP_ClearSelectedField()
 {
 	Send {Home}+{End}{Del}
 }
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; MISC FUNCTIONS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;The functions below are not related to SAP, but are used extensively in the 
+;functions above
+
+
+;; SAP_Write()
+;Write the string provided into the selected field
+;String = String to write
 SAP_Write(String)
 {
 	Send {shift up}%String%{shift up}
 }
 
+;; SAP_GetWindowTitle()
+;Get the name of the current window
+;Size = Number of characters (from left) to return
 SAP_GetWindowTitle(Size)
 {
 	WinGetTitle, WinTitle, A
@@ -197,6 +222,11 @@ SAP_GetWindowTitle(Size)
 	return WinTitle
 }
 
+;; SAP_ClipboardCopy()
+;Return the contects of the selection as if it was copied to the clipboard
+;Timeout = Timeout to try to copy the information to the clipboard in seconds
+;NOTE: The idea of this function is to copy the contents fo the selection 
+;without changing the current value of the clipboard
 SAP_ClipboardCopy(Timeout:=1)
 {
 	Send {shift up}
