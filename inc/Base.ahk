@@ -22,8 +22,7 @@ SAP_ReturnToMainScreen()
 	{
 		SAP_StatusBarMessage() ;Check for statusbar errors
 		
-		WinTitle := SAP_GetWindowTitle(StrLen(SCR_Main))
-		if (WinTitle = SCR_Main)
+		if (SAP_WindowActive(SCR_Main))
 		{
 			break
 		}
@@ -40,7 +39,7 @@ SAP_ReturnToMainScreen()
 SAP_OpenTransaction(TransactionName, WindowTitle:="")
 {
 	global HTK_NEWTRANSACTION, HTK_ENTER, SCR_Main
-	
+
 	SAP_ReturnToMainScreen()
 	
 	Send %HTK_NEWTRANSACTION%
@@ -54,8 +53,7 @@ SAP_OpenTransaction(TransactionName, WindowTitle:="")
 		{
 			SAP_StatusBarMessage() ;Check for statusbar errors
 			
-			WinTitle := SAP_GetWindowTitle(StrLen(SCR_Main))
-			if (WinTitle <> SCR_Main)
+			if (!SAP_WindowActive(SCR_Main))
 			{
 				break
 			}
@@ -84,15 +82,15 @@ SAP_WaitForWindow(WindowTitle, IgnoreWarning:= false, Timeout:=0)
 	{
 		SAP_StatusBarMessage() ;Check for statusbar errors
 		
-		if (SAP_GetWindowTitle(StrLen(WindowTitle)) = WindowTitle)
+		if (SAP_WindowActive(WindowTitle))
 		{
 			break
 		}
-		else if (SAP_GetWindowTitle(StrLen(SCR_ERROR)) = SCR_ERROR)
+		else if (SAP_WindowActive(SCR_ERROR))
 		{
 			throw Exception("Error", -1)
 		}
-		else if (SAP_GetWindowTitle(StrLen(SCR_WARNING)) = SCR_WARNING)
+		else if (SAP_WindowActive(SCR_WARNING))
 		{
 			if IgnoreWarning
 			{
@@ -121,7 +119,7 @@ SAP_WaitForWindow(WindowTitle, IgnoreWarning:= false, Timeout:=0)
 SAP_SelectionSelect(OptionNumber, OptionName:="")
 {
 	global HTK_SELECT, HTK_ENTER
-
+	
 	Send {Down %OptionNumber%}
 	
 	;Check if name is right
@@ -137,7 +135,7 @@ SAP_SelectionSelect(OptionNumber, OptionName:="")
 			Sleep 10
 			
 			Loop
-			{
+			{	
 				Send {Home}
 				Sleep 10
 				Send +{End}
@@ -172,6 +170,8 @@ SAP_SelectionSelect(OptionNumber, OptionName:="")
 SAP_StatusBarMessage()
 {
 	global CRD_StatusBar_X, CRD_StatusBar_Y, CLR_StatusBar_Normal, CLR_StatusBar_Error, CLR_StatusBar_Ok
+	
+	SAP_WaitSAPProcess() ;Avoid executing this outside SAP window
 	
 	PixelGetColor, Color, %CRD_StatusBar_X%, %CRD_StatusBar_Y%, RGB
 	if (Color = CLR_StatusBar_Normal)
@@ -224,14 +224,20 @@ SAP_Write(String)
 	Send {shift up}%String%{shift up}
 }
 
-;; SAP_GetWindowTitle()
-;Get the name of the current window
-;Size = Number of characters (from left) to return
-SAP_GetWindowTitle(Size)
+;; SAP_WindowActive()
+;Returns true if specified window is active or false otherwise
+;Window = RegEx with the name of the required window
+SAP_WindowActive(Window)
 {
 	WinGetTitle, WinTitle, A
-	StringLeft, WinTitle, WinTitle, Size
-	return WinTitle
+	if (RegExMatch(WinTitle, Window) > 0)
+	{
+		return true
+	}
+	else
+	{
+		return false
+	}
 }
 
 ;; SAP_ClipboardCopy()
@@ -254,4 +260,13 @@ SAP_ClipboardCopy(Timeout:=1)
 	NewClipboard := clipboard
 	clipboard := OldClipboard
 	return NewClipboard
+}
+
+;; SAP_WaitSAPProcess()
+;Freeze the script until SAP Process is in foreground
+SAP_WaitSAPProcess()
+{
+	global WIN_SAP_Process
+	
+	WinWaitActive, ahk_exe %WIN_SAP_Process%
 }
