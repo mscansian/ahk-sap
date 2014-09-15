@@ -9,8 +9,8 @@
 ;Default title are in German. Change this values if you are using SAP in another
 ;language
 
-SCR_MMBE_Main  := "Bestandsübersicht: Buchungskreis/Werk/Lager/Charge" ;Main
-SCR_MMBE_Basic := "Bestandsübersicht: Grundliste"                      ;Basic data
+SCR_MMBE_Main  := "^Bestandsübersicht: Buchungskreis/Werk/Lager/Charge" ;Main
+SCR_MMBE_Basic := "^Bestandsübersicht: Grundliste"                      ;Basic data
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; FUNCTIONS ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
